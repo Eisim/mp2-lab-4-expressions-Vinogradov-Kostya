@@ -39,6 +39,7 @@ bool contains(char symb,std::string set) {
 	}
 	return false;
 }
+
 bool Expression::transform() {
 	if (bracketsIsCorrect(source_str) == 0) return false; 
 	states a = states::WAIT_NUMBER__OR_MINUS_OR_OPENING_BRACKET;
@@ -150,7 +151,7 @@ bool Expression::transform() {
 			//std::cout <<"ERROR\n";
 			return false;
 		}
-
+		if (!contains(source_str[source_str.size() - 1], alph_nums) && !contains(source_str[source_str.size() - 1], alph_closing_brackets)) return false;
 	}
 	return true;
 }
