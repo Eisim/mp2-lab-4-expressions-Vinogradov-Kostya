@@ -1,11 +1,7 @@
 #include"expression.h"
 #include<stack>
-//can be used
-//int getPriority(char elem,std::string str) {//priority is based on index in string
-//	int index = 0;
-//	for(index;elem!=str[index]||index<str.size();index++)
-//	return (index>=str.size())?-1:index;
-//}
+
+
 bool contains(char symb, std::string set) {
 	for (int i = 0; i < set.size(); i++) {
 		if (symb == set[i]) return true;
@@ -13,10 +9,16 @@ bool contains(char symb, std::string set) {
 	return false;
 }
 
+bool in(std::string str, std::vector<std::string> arr) {
+	for (int i = 0; i < arr.size();i++) {
+		if (str == arr[i]) return true;
+	}
+	return false;
+}
+
 bool bracketsIsCorrect(Expression& exp) {
 	std::stack<char> st;
 	std::string str = exp.getSourceString();
-
 
 	for (unsigned int i = 0; i < str.size(); i++) {
 		if (contains(str[i], exp.getAcceptableOpeningBrackets()) && contains(str[i+1], exp.getAcceptableClosingBrackets())) {
@@ -35,199 +37,186 @@ bool bracketsIsCorrect(Expression& exp) {
 
 	}
 
-
 	return st.empty();
 }
 
-
 enum class states {
-	WAIT_NUMBER__OR_MINUS_OR_OPENING_BRACKET,
-	WAIT_NUMBER_OR_OPENING_BRACKET,
-	WAIT_NUMBER,
-	WAIT_NUMBER_OR_OPERATION_OR_DOT_OR_CLOSING_BRACKET,
-	WAIT_NUMBER_OR_OPERATION_OR_CLOSING_BRACKET,
-	WAIT_OPERATION_OR_CLOSING_BRACKET,
+	WAIT_LET_NUM_MIN_OPENBR,
+	WAIT_NUM_DOT_OPER_CLOSEBR,
+	WAIT_NUM,
+	WAIT_NUM_OPER_CLOSEBR,
+	WAIT_OPER_CLOSEBR,
+	WAIT_LET_NUM_OPENBR,
+	WAIT_LET_NUM_OPER,
 
 	ERROR
 };
 
-
 bool Expression::expressionIsCorrect() {
-	if (bracketsIsCorrect(*this) == 0) return false; 
-	states a = states::WAIT_NUMBER__OR_MINUS_OR_OPENING_BRACKET;
-	char symb;
-
+	if (bracketsIsCorrect(*this) == 0) return false;
+	states a = states::WAIT_LET_NUM_MIN_OPENBR;
+	char symb=' ';
 
 	for (int i = 0; i < source_str.size(); i++) {
 		symb = source_str[i];
 
 		switch (a) {
-		//
-		case(states::WAIT_NUMBER__OR_MINUS_OR_OPENING_BRACKET):
-
-			//std::cout << "WAIT_NUMBER__OR_MINUS_OR_OPENING_BRACKET\n";
-
-			if (!contains(symb,alph_nums)&& !contains(symb,alph_opening_brackets)&& !(symb=='-')) {
-				a = states::ERROR;
+		case(states::WAIT_LET_NUM_MIN_OPENBR):
+			if (contains(symb, alph_nums)) {
+				a = states::WAIT_NUM_DOT_OPER_CLOSEBR;
 			}
-			else if (contains(symb, alph_nums)) {
-				a = states::WAIT_NUMBER_OR_OPERATION_OR_DOT_OR_CLOSING_BRACKET;
+			else if (contains(symb, alph_letters)) {
+				a = states::WAIT_LET_NUM_OPER;
 			}
 			else if (symb == '-') {
-				a = states::WAIT_NUMBER_OR_OPENING_BRACKET;
+				a = states::WAIT_LET_NUM_MIN_OPENBR;
 			}
 			else if (contains(symb, alph_opening_brackets)) {
-				
 				a = a;
 			}
+			else a = states::ERROR;
+
 			break;
-		//
-		case(states::WAIT_NUMBER_OR_OPENING_BRACKET):
-
-			//std::cout << "WAIT_NUMBER_OR_OPENING_BRACKET\n";
-
-			if (!contains(symb,alph_nums) && !contains(symb,alph_opening_brackets)) {
-				a = states::ERROR;
-			}
-			else if (contains(symb, alph_nums)) {
-				a = states::WAIT_NUMBER_OR_OPERATION_OR_DOT_OR_CLOSING_BRACKET;
-			}
-			else if (contains(symb, alph_opening_brackets)) {
-				a = states::WAIT_NUMBER__OR_MINUS_OR_OPENING_BRACKET;
-			}
-			break;
-		//
-		case(states::WAIT_NUMBER):
-
-			//std::cout << "WAIT_NUMBER\n";
-
-			if (!contains(symb, alph_nums)) {
-				a = states::ERROR;
-
-			}
-			else {
-				a = states::WAIT_NUMBER_OR_OPERATION_OR_CLOSING_BRACKET;
-			}
-			break;
-		//
-		case(states::WAIT_NUMBER_OR_OPERATION_OR_CLOSING_BRACKET):
-
-			//std::cout << "WAIT_NUMBER_OR_OPERATION_OR_CLOSING_BRACKET\n";
-
-			if (!contains(symb, alph_nums)&& !contains(symb, alph_operations)&&!contains(symb,alph_closing_brackets))
-				a = states::ERROR;
-			else if (contains(symb, alph_operations))
-				a = states::WAIT_NUMBER_OR_OPENING_BRACKET;
-			else if(contains(symb,alph_closing_brackets))
-				a=a;
-			else if (contains(symb, alph_nums)) {
+		case(states::WAIT_NUM_DOT_OPER_CLOSEBR):
+			if (contains(symb, alph_nums)) {
 				a = a;
 			}
-			break;
-		//
-		case(states::WAIT_OPERATION_OR_CLOSING_BRACKET):
-
-			//std::cout << "WAIT_OPERATION_OR_CLOSING_BRACKET\n";
-
-			if (!contains(symb, alph_operations) && !contains(symb, alph_closing_brackets)) {
-				a = states::ERROR;
-				
+			else if (contains(symb, alph_separator)) {
+				a = states::WAIT_NUM;
 			}
-			else if (contains(symb, alph_operations))
-				a = states::WAIT_NUMBER_OR_OPENING_BRACKET;
-			else if (contains(symb, alph_closing_brackets))
-				a = a;
-			break;
-		//
-		case(states::WAIT_NUMBER_OR_OPERATION_OR_DOT_OR_CLOSING_BRACKET):
-
-			//std::cout << "WAIT_NUMBER_OR_OPERATION_OR_DOT_OR_CLOSING_BRACKET\n";
-
-			if (!contains(symb, alph_nums)&& !contains(symb,alph_operations) && !contains(symb,alph_separator) && !contains(symb,alph_closing_brackets) ) {
-				a = states::ERROR;
+			else if (contains(symb, alph_operations)) {
+				a = states::WAIT_LET_NUM_OPENBR;
 			}
-			else if (contains(symb, alph_nums)) {
+			else if (contains(symb, alph_closing_brackets)) {
+				a = states::WAIT_OPER_CLOSEBR;
+			}
+			else a = states::ERROR;
+
+			break;
+		case(states::WAIT_NUM):
+			if (contains(symb, alph_nums)) {
+				a = states::WAIT_NUM_OPER_CLOSEBR;
+			}
+			else a = states::ERROR;
+
+			break;
+		case(states::WAIT_NUM_OPER_CLOSEBR) :
+			if (contains(symb, alph_nums)) {
 				a = a;
 			}
 			else if (contains(symb, alph_operations)) {
-				a = states::WAIT_NUMBER_OR_OPENING_BRACKET;
-			}
-			else if (contains(symb, alph_separator)) {
-				a = states::WAIT_NUMBER;
+				a = states::WAIT_LET_NUM_OPENBR;
 			}
 			else if (contains(symb, alph_closing_brackets)) {
-				a = states::WAIT_OPERATION_OR_CLOSING_BRACKET;
+				a = states::WAIT_OPER_CLOSEBR;
 			}
-			break;
+			else a = states::ERROR;
 
-		case(states::ERROR):
-			//std::cout <<"ERROR\n";
-			return false;
+			break;
+		case(states::WAIT_OPER_CLOSEBR):
+			if (contains(symb, alph_operations)) {
+				a = states::WAIT_LET_NUM_OPENBR;
+			}
+			else if (contains(symb, alph_closing_brackets)) {
+				a = a;
+			}
+			else a = states::ERROR;
+
+				break;
+		case(states::WAIT_LET_NUM_OPENBR):
+			if (contains(symb, alph_letters)) {
+				a = states::WAIT_LET_NUM_OPER;
+			}
+			else if (contains(symb, alph_nums)) {
+				a = states::WAIT_NUM_DOT_OPER_CLOSEBR;
+			}
+			else if (contains(symb, alph_opening_brackets)) {
+				a = states::WAIT_LET_NUM_MIN_OPENBR;
+			}
+
+			break;
+		case(states::ERROR) :
+				return false;
+				break;
 		}
-		if (!contains(source_str[source_str.size() - 1], alph_nums) && !contains(source_str[source_str.size() - 1], alph_closing_brackets)) return false;
 	}
-	return true;
+	if (contains(symb, alph_nums) || contains(symb, alph_letters) || contains(symb, alph_closing_brackets)) {
+		return true;
+	}
+	return false;
+}
+
+void Expression::rewriteForUnaryMinus()
+{
+	char cur_symb = ' ';
+	std::string tmp;
+	if (source_str[0] == '-')
+		tmp += '0';
+	tmp += source_str[0];
+
+	for (int i = 1; i < source_str.size(); i++) {
+		cur_symb = source_str[i];
+		if (contains(source_str[i - 1], alph_opening_brackets) && cur_symb == '-')
+			tmp += '0';
+		tmp += cur_symb;
+	}
+	modified_str = tmp;
 }
 
 void Expression::cut() {
 
 	std::stack<char> operations_stack;
-	
+	rewriteForUnaryMinus();
 	if (is_correct == false) return; 
 	char cur_symb;
 	std::string token;
 
-	for (int i = 0; i < source_str.size(); i++) {
-		cur_symb = source_str[i];
-		if (contains(cur_symb, alph_operations) || contains(cur_symb, alph_opening_brackets)) {
-
+	for (int i = 0; i < modified_str.size(); i++) {
+		cur_symb = modified_str[i];
+		if (contains(cur_symb, alph_operations) || contains(cur_symb, alph_opening_brackets) || contains(cur_symb, alph_closing_brackets)) {
 			if (token != "") {
+				
 				postfix_form.push_back(token);
-				operands.insert({ token, (contains(token[0],alph_just_letters)) ? 0.0 : std::stod(token) });
-
+				if (in(token, alph_constants))
+					operands.insert({ token,constants[token]});
+				else
+				operands.insert({ token, (contains(token[0],alph_letters)) ? 0.0 : std::stod(token) });
 				token = "";
 			}
-			if(contains(cur_symb, alph_opening_brackets)==false)
-			while (operations_stack.empty() == false && (priority[cur_symb]<=priority[operations_stack.top()])) {
-				if(contains(operations_stack.top(), alph_opening_brackets) == false)
+		}
+		if (contains(cur_symb, alph_opening_brackets)) {
+			operations_stack.push(cur_symb);
+		}
+		else if (contains(cur_symb, alph_closing_brackets)) {
+			while (!contains(operations_stack.top(), alph_opening_brackets)) {
+				postfix_form.push_back(std::string(1, operations_stack.top()));
+				operations_stack.pop();
+			}
+			operations_stack.pop();
+		}
+		else if (contains(cur_symb, alph_operations)) {
+			while (operations_stack.empty()==false&&priority[cur_symb] <= priority[operations_stack.top()]) {
 				postfix_form.push_back(std::string(1,operations_stack.top()));
 				operations_stack.pop();
 			}
 			operations_stack.push(cur_symb);
-
-
 		}
-		else if (contains(cur_symb, alph_closing_brackets)) {
-			if (token != "") {
-				postfix_form.push_back(token);
-				operands.insert({ token, (contains(token[0],alph_just_letters)) ? 0.0 : std::stod(token) });
 
-				token = "";
-			}
-
-			while (operations_stack.empty() == false) {
-				if (contains(operations_stack.top(), alph_opening_brackets) == false) 
-					postfix_form.push_back(std::string(1, operations_stack.top()));
-					operations_stack.pop();
-				
-			}
-
-		}
-		else {
+		if (contains(cur_symb, alph_nums) || contains(cur_symb, alph_letters)||contains(cur_symb,alph_separator))
 			token += cur_symb;
-		}
+	
 	}
 	if (token != "") {
 		postfix_form.push_back(token);
-		operands.insert({ token, (contains(token[0],alph_just_letters)) ? 0.0: std::stod(token) });
+		if (in(token, alph_constants)) 
+			operands.insert({ token,constants[token] });
+		else
+			operands.insert({ token, (contains(token[0],alph_letters)) ? 0.0 : std::stod(token) });
 	}
-	while (operations_stack.empty() == false) {
-		if (contains(operations_stack.top(), alph_opening_brackets) == false) 
-			postfix_form.push_back(std::string(1, operations_stack.top()));
-			operations_stack.pop();
-
+	for (int i = 0; i < operations_stack.size(); i++) {
+		postfix_form.push_back(std::string(1, operations_stack.top()));
+		operations_stack.pop();
 	}
-
 }
 
 void Expression::calculate() {
@@ -239,12 +228,15 @@ void Expression::calculate() {
 		//------------------------------------------------HERE APPEND OPERATIONS
 		if (lexem == "+") {
 			v2 = st.top(); st.pop();
+
 			v1 = st.top(); st.pop();
+
 			st.push(v1 + v2);
 		}
 		else if (lexem == "-") {
 			v2 = st.top(); st.pop();
 			v1 = st.top(); st.pop();
+
 			st.push(v1 - v2);
 		}
 		else if (lexem == "*") {
@@ -258,7 +250,6 @@ void Expression::calculate() {
 			st.push(v1 / v2);
 		}
 		else st.push(operands[lexem]);
-		
 	}
 	res = st.top();
 }
@@ -276,7 +267,10 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 	if (exp.source_str == "") {
 		istream >> exp.source_str;
 		exp.is_correct = exp.expressionIsCorrect();
-		exp.cut();
+
+		if (exp.is_correct)
+			exp.cut();
+		else exp.source_str = "";
 	}
 	else {  //TODO if's
 		istream >> tmp;
@@ -289,8 +283,11 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 				token1 += symb;
 			else token2 += symb;
 		}
-		exp.operands[token1] = std::stod(token2);// ({ token1,std::stod(token2) });
+		if (in(token1, exp.alph_constants))std::cout << "Can't change constant\n";
+		else
+		exp.operands[token1] = std::stod(token2);
 	}
+	if(exp.is_correct)
 	exp.calculate();
 
 	return istream;

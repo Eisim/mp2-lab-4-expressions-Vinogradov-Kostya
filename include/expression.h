@@ -5,15 +5,22 @@
 #include<map>
 //abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
 class Expression {
-	std::string source_str,operations;
-	std::string alph_nums = "0123456789abcdefghijklmnopqrstuvwxyz", 
-		alph_just_letters="abcdefghijklmnopqrstuvwxyz",
+	std::string source_str, modified_str;;
+	std::string alph_nums = "0123456789", 
+		alph_letters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
 		alph_operations = "-+/*",//this sorted by priority  .  index is the priority
 		alph_opening_brackets ="({[",
 		alph_closing_brackets=")}]",
 		alph_separator=".,";
 	std::vector<std::string> postfix_form;
+	std::vector<std::string>alph_constants = {
+	"pi","e"
+	};
 	std::map <std::string, double> operands;
+	std::map <std::string, double> constants = {
+		{"pi",3.1415926535897932384626433832795},
+		{"e",2.7182818284590452353602874713527}
+	};
 	std::map < char, int > priority = {
 		{'(',0},
 		{'[',0},
@@ -35,6 +42,8 @@ public:
 	std::string getSourceString() {
 		return source_str;
 	}
+	void rewriteForUnaryMinus();
+
 	std::string getAcceptableNums() { return alph_nums; }
 	std::string getAcceptableOperations() { return alph_operations; }
 	std::string getAcceptableOpeningBrackets() { return alph_opening_brackets; }
