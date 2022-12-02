@@ -1,10 +1,12 @@
 #include "expression.h"
 #include<map>
 
+
 #include <gtest.h>
 
 TEST(Expression, can_create_empty_expression)
 {
+
 	ASSERT_NO_THROW(Expression exp);
 }
 TEST(Expression, can_create_expression_with_empty_str)
