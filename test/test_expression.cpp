@@ -132,3 +132,29 @@ TEST(Expression, can_correctly_calculate_expression_after_change_value_of_variab
 	exp("a=2*(-1.5+3.5)");
 	EXPECT_EQ(5.5, exp.getResult());
 }
+
+
+
+TEST(Expression, can_calculate_expression_with_different_priority_operations_correctly) {
+	Expression exp("3+2*5");
+	EXPECT_EQ(13, exp.getResult());
+}
+TEST(Expression, can_calculate_expression_with_brackets_correctly) {
+	Expression exp("3*(2+5)");
+	EXPECT_EQ(21, exp.getResult());
+}
+
+
+
+TEST(Expression, can_determine_unary_minus) {
+	Expression exp("-3");
+	EXPECT_EQ(-3, exp.getResult());
+}
+TEST(Expression, can_determine_unary_minuses) {
+	Expression exp("-(-3)");
+	EXPECT_EQ(3, exp.getResult());
+}
+TEST(Expression, can_calculate_expression_with_unary_minuse_correctly) {
+	Expression exp("-(3*2)+(-(-1-1))");
+	EXPECT_EQ(-4, exp.getResult());
+}
