@@ -1,8 +1,8 @@
-#include "tmatrix.h"
+#include "expression.h"
 
 #include <gtest.h>
 
-TEST(TDynamicVector, can_create_vector_with_positive_length)
+TEST(Expression, can_create_empty_expression)
 {
-  ASSERT_NO_THROW(TDynamicVector<int> v(5));
+  ASSERT_NO_THROW(Expression exp);
 }
