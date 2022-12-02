@@ -1,5 +1,4 @@
 #include"expression.h"
-#include<stack>
 
 
 bool contains(char symb, std::string set) {
@@ -47,7 +46,7 @@ enum class states {
 	WAIT_NUM_OPER_CLOSEBR,
 	WAIT_OPER_CLOSEBR,
 	WAIT_LET_NUM_OPENBR,
-	WAIT_LET_NUM_OPER,
+	WAIT_LET_NUM_OPER_CLOSEBR,
 
 	ERROR
 };
@@ -66,10 +65,10 @@ bool Expression::expressionIsCorrect() {
 				a = states::WAIT_NUM_DOT_OPER_CLOSEBR;
 			}
 			else if (contains(symb, alph_letters)) {
-				a = states::WAIT_LET_NUM_OPER;
+				a = states::WAIT_LET_NUM_OPER_CLOSEBR;
 			}
 			else if (symb == '-') {
-				a = states::WAIT_LET_NUM_MIN_OPENBR;
+				a = states::WAIT_LET_NUM_OPENBR;
 			}
 			else if (contains(symb, alph_opening_brackets)) {
 				a = a;
@@ -125,7 +124,7 @@ bool Expression::expressionIsCorrect() {
 				break;
 		case(states::WAIT_LET_NUM_OPENBR):
 			if (contains(symb, alph_letters)) {
-				a = states::WAIT_LET_NUM_OPER;
+				a = states::WAIT_LET_NUM_OPER_CLOSEBR;
 			}
 			else if (contains(symb, alph_nums)) {
 				a = states::WAIT_NUM_DOT_OPER_CLOSEBR;
@@ -133,8 +132,26 @@ bool Expression::expressionIsCorrect() {
 			else if (contains(symb, alph_opening_brackets)) {
 				a = states::WAIT_LET_NUM_MIN_OPENBR;
 			}
+			else {
+				a = states::ERROR;
+			}
 
 			break;
+		case(states::WAIT_LET_NUM_OPER_CLOSEBR): {
+			if (contains(symb, alph_letters) || contains(symb, alph_nums)) {
+				a = a;
+			}
+			else if (contains(symb, alph_operations)) {
+				a = states::WAIT_LET_NUM_OPENBR;
+			}
+			else if (contains(symb, alph_closing_brackets)) {
+				a=states::WAIT_OPER_CLOSEBR; //------------------------------
+			}
+			else {
+				a = states::ERROR;
+			}
+			break;
+		}
 		case(states::ERROR) :
 				return false;
 				break;
@@ -195,9 +212,10 @@ void Expression::cut() {
 			operations_stack.pop();
 		}
 		else if (contains(cur_symb, alph_operations)) {
-			while (operations_stack.empty()==false&&priority[cur_symb] <= priority[operations_stack.top()]) {
+			while (operations_stack.empty()==false&&(priority[cur_symb] <= priority[operations_stack.top()])) {
 				postfix_form.push_back(std::string(1,operations_stack.top()));
 				operations_stack.pop();
+
 			}
 			operations_stack.push(cur_symb);
 		}
@@ -213,7 +231,7 @@ void Expression::cut() {
 		else
 			operands.insert({ token, (contains(token[0],alph_letters)) ? 0.0 : std::stod(token) });
 	}
-	for (int i = 0; i < operations_stack.size(); i++) {
+	while(operations_stack.empty()==false) {
 		postfix_form.push_back(std::string(1, operations_stack.top()));
 		operations_stack.pop();
 	}
@@ -247,25 +265,84 @@ void Expression::calculate() {
 		else if (lexem == "/") {
 			v2 = st.top(); st.pop();
 			v1 = st.top(); st.pop();
+			if (v2 == 0) {
+				std::cout << "Division by zero\n"; //throw("Division by zero");
+			is_correct = false;
+			break;
+			}
 			st.push(v1 / v2);
 		}
 		else st.push(operands[lexem]);
 	}
+	if(st.empty()==false)
 	res = st.top();
 }
+
 Expression::Expression(std::string str) {
 	source_str = str;
 	
 	is_correct=this->expressionIsCorrect();
-	this->cut();
-	this->calculate();
+	if (is_correct) {
+		this->cut();
+		this->calculate();
+	}
 }
 
+Expression& Expression::operator=(std::string str) {
+	source_str = str;
+
+	is_correct = this->expressionIsCorrect();
+	if (is_correct) {
+		this->cut();
+		this->calculate();
+	}
+
+	return *this;
+}
+
+
+void Expression::operator()(std::string str) {
+	std::string tmp, token1, token2;
+	bool flag = false;
+	tmp = str;
+	if (!contains('=', tmp)) {
+		source_str = tmp;
+		is_correct = expressionIsCorrect();
+
+		if (is_correct)
+			cut();
+		else source_str = "";
+	}
+	else {  //TODO if's
+		for (auto symb : tmp) {
+			if (symb == '=') {
+				flag = true;
+				continue;
+			}
+			if (flag == false)
+				token1 += symb;
+			else token2 += symb;
+		}
+		if (in(token1, alph_constants))std::cout << "Can't change constant\n";
+		else if (token2 != "") {
+			Expression tmpexp;
+			tmpexp.operands = operands;
+			tmpexp = token2;
+			operands[token1] = tmpexp.res;
+		}
+		else if (token2 == "") {
+			std::cout << '=' << operands[token1];
+		}
+	}
+	if (is_correct)
+		calculate();
+}
 std::istream& operator>>(std::istream& istream,Expression& exp) {
 	std::string tmp,token1,token2;
 	bool flag=false;
-	if (exp.source_str == "") {
-		istream >> exp.source_str;
+	istream >> tmp;
+	if (!contains('=',tmp)) {
+		exp.source_str = tmp;
 		exp.is_correct = exp.expressionIsCorrect();
 
 		if (exp.is_correct)
@@ -273,8 +350,7 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 		else exp.source_str = "";
 	}
 	else {  //TODO if's
-		istream >> tmp;
-		for (auto symb:tmp) {
+		for (auto symb : tmp) {
 			if (symb == '=') {
 				flag = true;
 				continue;
@@ -284,12 +360,18 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 			else token2 += symb;
 		}
 		if (in(token1, exp.alph_constants))std::cout << "Can't change constant\n";
-		else
-		exp.operands[token1] = std::stod(token2);
+		else if(token2!="") {
+			Expression tmpexp;
+			tmpexp.operands = exp.operands;
+			tmpexp = token2;
+			exp.operands[token1] = tmpexp.res;
+		}
+		else if (token2 == "") {
+			std::cout << '=' << exp.operands[token1];
+		}
 	}
 	if(exp.is_correct)
 	exp.calculate();
-
 	return istream;
 }
 std::ostream& operator<<(std::ostream& ostream, const Expression& exp) {

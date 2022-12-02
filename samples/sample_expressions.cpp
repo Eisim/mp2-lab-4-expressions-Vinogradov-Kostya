@@ -7,11 +7,8 @@ int main() {
 
 	while (true) {
 		std::cin >> a;
-		std::cout << a << "\n\n";
-		//for (int i = 0; i < a.getPostfixForm().size(); i++)
-		//	std::cout << a.getPostfixForm()[i]<<" ";
+		std::cout << a << "\n";
 	}
-
 
 	return 0;
 }

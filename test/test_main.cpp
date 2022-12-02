@@ -1,8 +1,4 @@
 #include <gtest.h>
-//my changes
-#include"tset.h"
-//eto ochen' vazhnii komentarii
-
 
 
 int main(int argc, char **argv) {

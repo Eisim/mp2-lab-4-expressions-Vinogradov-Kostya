@@ -1,8 +1,13 @@
 ﻿#pragma once
+
 #include<vector>
 #include<iostream>
 #include<string>
 #include<map>
+#include<initializer_list>
+#include<stack>
+
+
 //abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
 class Expression {
 	std::string source_str, modified_str;;
@@ -44,6 +49,8 @@ public:
 	}
 	void rewriteForUnaryMinus();
 
+	double getResult() { return res; };
+	bool isCorrect() { return is_correct; }
 	std::string getAcceptableNums() { return alph_nums; }
 	std::string getAcceptableOperations() { return alph_operations; }
 	std::string getAcceptableOpeningBrackets() { return alph_opening_brackets; }
@@ -51,7 +58,11 @@ public:
 	std::string getAcceptableSeparators() { return alph_separator; }
 	std::vector<std::string> getPostfixForm() { return postfix_form; }
 
-	
+	Expression& operator=(std::string str);
+
+	// an alternative to keyboard input
+	void operator()(std::string str);
+
 	friend std::istream& operator>>(std::istream& istr,Expression& exp);
 	friend std::ostream& operator<<(std::ostream& ostr,const Expression& exp);
 };
