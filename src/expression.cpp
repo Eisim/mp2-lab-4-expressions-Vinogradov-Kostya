@@ -380,3 +380,4 @@ std::ostream& operator<<(std::ostream& ostream, const Expression& exp) {
 	else ostream << "Expression is not correct";
 	return ostream;
 }
+
