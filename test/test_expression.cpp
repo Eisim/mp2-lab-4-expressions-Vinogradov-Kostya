@@ -5,7 +5,7 @@
 
 TEST(Expression, can_create_empty_expression)
 {
-	ASSERT_NO_THROW(Expression e);
+	ASSERT_NO_THROW(Expression exp);
 }
 TEST(Expression, can_create_expression_with_empty_str)
 {
