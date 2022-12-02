@@ -1,5 +1,12 @@
 #include"expression.h"
 
+#include<vector>
+#include<iostream>
+#include<string>
+#include<map>
+#include<stack>
+
+
 
 bool contains(char symb, std::string set) {
 	for (int i = 0; i < set.size(); i++) {

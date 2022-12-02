@@ -1,8 +1,11 @@
 #include <gtest.h>
-
+#include<iostream>
 
 int main(int argc, char **argv) {
-
+    char tmp;
     ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    RUN_ALL_TESTS();
+    std::cin >> tmp;
+    return 1;
+    
 }
