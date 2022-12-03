@@ -307,43 +307,6 @@ Expression& Expression::operator=(std::string str) {
 	return *this;
 }
 
-
-void Expression::operator()(std::string str) {
-	std::string tmp, token1, token2;
-	bool flag = false;
-	tmp = str;
-	if (!contains('=', tmp)) {
-		source_str = tmp;
-		is_correct = expressionIsCorrect();
-
-		if (is_correct)
-			cut();
-		else source_str = "";
-	}
-	else {  //TODO if's
-		for (auto symb : tmp) {
-			if (symb == '=') {
-				flag = true;
-				continue;
-			}
-			if (flag == false)
-				token1 += symb;
-			else token2 += symb;
-		}
-		if (in(token1, alph_constants))std::cout << "Can't change constant\n";
-		else if (token2 != "") {
-			Expression tmpexp;
-			tmpexp.operands = operands;
-			tmpexp = token2;
-			operands[token1] = tmpexp.res;
-		}
-		else if (token2 == "") {
-			std::cout << '=' << operands[token1];
-		}
-	}
-	if (is_correct)
-		calculate();
-}
 std::istream& operator>>(std::istream& istream,Expression& exp) {
 	std::string tmp,token1,token2;
 	bool flag=false;
@@ -366,7 +329,10 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 				token1 += symb;
 			else token2 += symb;
 		}
-		if (in(token1, exp.alph_constants))std::cout << "Can't change constant\n";
+		if (in(token1, exp.alph_constants) || contains(token1[0], exp.alph_nums)) {
+			std::cout << "Can't change constant\n";
+			exp.is_correct = false;
+		}
 		else if(token2!="") {
 			Expression tmpexp;
 			tmpexp.operands = exp.operands;

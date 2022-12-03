@@ -1,5 +1,5 @@
 #include "expression.h"
-#include<map>
+#include<iostream>
 
 #include <gtest.h>
 
@@ -58,59 +58,59 @@ TEST(Expression, can_calculate_expression_with_one_operation_division_correctly)
 	Expression exp("3/2");
 	EXPECT_EQ(1.5, exp.getResult());
 }
-TEST(Expression, can_determine_division_by_zero) {
+TEST(Expression, can_detect_division_by_zero) {
 	Expression exp("1/0");
 	EXPECT_EQ(0, exp.isCorrect());
 }
 
 
 
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_NUM) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_NUM) {
 	Expression exp("3.1.1");
 	EXPECT_EQ(0, exp.isCorrect());
 }
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_DOUBLE_SEPORATOR) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_DOUBLE_SEPORATOR) {
 	Expression exp("1..0");
 	EXPECT_EQ(0, exp.isCorrect());
 }
 
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_VARIABLE_STARTED_WITH_NUM) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_VARIABLE_STARTED_WITH_NUM) {
 	Expression exp("1abc");
 	EXPECT_EQ(0, exp.isCorrect());
 }
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_VARIABLE_WITH_DOT) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_VARIABLE_WITH_DOT) {
 	Expression exp("tmp.1");
 	EXPECT_EQ(0, exp.isCorrect());
 }
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_SEQUENCE_OF_OPERATIONS) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_SEQUENCE_OF_OPERATIONS) {
 	Expression exp("1+-2");
 	EXPECT_EQ(0, exp.isCorrect());
 }
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_DOUBLE_UNARY_MINUS) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_DOUBLE_UNARY_MINUS) {
 	Expression exp("--1");
 	EXPECT_EQ(0, exp.isCorrect());
 }
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_SINGLES_BRACKETS) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_SINGLES_BRACKETS) {
 	Expression exp("{1)");
 	EXPECT_EQ(0, exp.isCorrect());
 }
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_BRACKETS) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_BRACKETS) {
 	Expression exp("({1)}");
 	EXPECT_EQ(0, exp.isCorrect());
 }
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_SINGLES_BRACKETS_WITHOUT_VALUE) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_SINGLES_BRACKETS_WITHOUT_VALUE) {
 	Expression exp("()");
 	EXPECT_EQ(0, exp.isCorrect());
 }
-TEST(Expression, can_determine_incorrectness_of_expression_DIFFERENT_NUM_OF_BRACKETS) {
+TEST(Expression, can_detect_incorrectness_of_expression_DIFFERENT_NUM_OF_BRACKETS) {
 	Expression exp("(1))");
 	EXPECT_EQ(0, exp.isCorrect());
 }
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_LAST_SYMBOL_OPERATION) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_LAST_SYMBOL_OPERATION) {
 	Expression exp("1+2-");
 	EXPECT_EQ(0, exp.isCorrect());
 }
-TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_LAST_SYMBOL_DOT) {
+TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_LAST_SYMBOL_DOT) {
 	Expression exp("1+2.");
 	EXPECT_EQ(0, exp.isCorrect());
 }
@@ -118,18 +118,34 @@ TEST(Expression, can_determine_incorrectness_of_expression_INCORRECT_LAST_SYMBOL
 
 TEST(Expression, can_correctly_calculate_expression_after_change_value_of_variable) {
 	Expression exp("1+a");
-	exp("a=2");
+	std::istringstream input("a=2");
+	std::cin >> exp;
 	EXPECT_EQ(3, exp.getResult());
 }
 TEST(Expression, can_correctly_calculate_expression_after_change_values_of_variables) {
 	Expression exp("b+a");
-	exp("a=2");
-	exp("b=1");
+	std::istringstream input("a=2 b=1");
+	std::cin >> exp;
 	EXPECT_EQ(3, exp.getResult());
 }
+TEST(Expression, can_detect_change_value_of_constant_NUMBER) {
+	Expression exp("1+a");
+	std::istringstream input("a=2 b=1.5");
+	std::cin >> exp;
+	EXPECT_EQ(0, exp.isCorrect());
+}
+TEST(Expression, can_detect_change_value_of_constant_SPECIAL_CONSTANT) {
+	Expression exp("pi+a");
+	std::istringstream input("a=2 pi=5");
+	std::cin >> exp;
+	EXPECT_EQ(0, exp.isCorrect());
+}
+
+
 TEST(Expression, can_correctly_calculate_expression_after_change_value_of_variable_written_like_expression) {
 	Expression exp("1.5+a");
-	exp("a=2*(-1.5+3.5)");
+	std::istringstream input("a=2*(-1.5+3.5)");
+	std::cin >> exp;
 	EXPECT_EQ(5.5, exp.getResult());
 }
 
@@ -146,11 +162,11 @@ TEST(Expression, can_calculate_expression_with_brackets_correctly) {
 
 
 
-TEST(Expression, can_determine_unary_minus) {
+TEST(Expression, can_detect_unary_minus) {
 	Expression exp("-3");
 	EXPECT_EQ(-3, exp.getResult());
 }
-TEST(Expression, can_determine_unary_minuses) {
+TEST(Expression, can_detect_unary_minuses) {
 	Expression exp("-(-3)");
 	EXPECT_EQ(3, exp.getResult());
 }
