@@ -307,6 +307,7 @@ Expression& Expression::operator=(std::string str) {
 	return *this;
 }
 
+
 void Expression::operator()(std::string str) {
 	std::string tmp, token1, token2;
 	bool flag = false;
@@ -343,6 +344,7 @@ void Expression::operator()(std::string str) {
 	if (is_correct)
 		calculate();
 }
+
 std::istream& operator>>(std::istream& istream,Expression& exp) {
 	std::string tmp,token1,token2;
 	bool flag=false;
@@ -365,7 +367,10 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 				token1 += symb;
 			else token2 += symb;
 		}
-		if (in(token1, exp.alph_constants))std::cout << "Can't change constant\n";
+		if (in(token1, exp.alph_constants) || contains(token1[0], exp.alph_nums)) {
+			std::cout << "Can't change constant\n";
+			exp.is_correct = false;
+		}
 		else if(token2!="") {
 			Expression tmpexp;
 			tmpexp.operands = exp.operands;
