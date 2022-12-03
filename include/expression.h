@@ -40,6 +40,7 @@ class Expression {
 	bool expressionIsCorrect();
 	void cut();
 	void calculate();
+	void clear();
 public:
 	Expression() :is_correct(false),res(0) {};
 	Expression(std::string str);
@@ -58,6 +59,8 @@ public:
 	std::vector<std::string> getPostfixForm() { return postfix_form; }
 
 	Expression& operator=(std::string str);
+	Expression& operator=(const Expression& exp);
+
 
 
 	friend std::istream& operator>>(std::istream& istr,Expression& exp);

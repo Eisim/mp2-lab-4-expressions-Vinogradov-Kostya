@@ -7,6 +7,10 @@
 #include<stack>
 
 
+void Expression::clear() {
+	Expression tmp;
+	*this = tmp;
+}
 
 bool contains(char symb, std::string set) {
 	for (int i = 0; i < set.size(); i++) {
@@ -295,6 +299,16 @@ Expression::Expression(std::string str) {
 	}
 }
 
+Expression& Expression::operator=(const Expression& exp) {
+	if (this == &exp) return *this;
+	operands = exp.operands;
+	postfix_form = exp.postfix_form;
+	is_correct = exp.is_correct;
+	res = exp.res;
+	return *this;
+}
+
+
 Expression& Expression::operator=(std::string str) {
 	source_str = str;
 
@@ -312,6 +326,7 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 	bool flag=false;
 	istream >> tmp;
 	if (!contains('=',tmp)) {
+		exp.clear();
 		exp.source_str = tmp;
 		exp.is_correct = exp.expressionIsCorrect();
 
@@ -319,7 +334,7 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 			exp.cut();
 		else exp.source_str = "";
 	}
-	else {  //TODO if's
+	else { 
 		for (auto symb : tmp) {
 			if (symb == '=') {
 				flag = true;
@@ -343,8 +358,10 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 			std::cout << '=' << exp.operands[token1];
 		}
 	}
-	if(exp.is_correct)
-	exp.calculate();
+	exp.is_correct = exp.expressionIsCorrect();
+	if (exp.is_correct) {
+		exp.calculate();
+	}
 	return istream;
 }
 std::ostream& operator<<(std::ostream& ostream, const Expression& exp) {
