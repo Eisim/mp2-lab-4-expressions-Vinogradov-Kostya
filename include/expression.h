@@ -59,8 +59,6 @@ public:
 
 	Expression& operator=(std::string str);
 
-	// an alternative to keyboard input
-	void operator()(std::string str);
 
 	friend std::istream& operator>>(std::istream& istr,Expression& exp);
 	friend std::ostream& operator<<(std::ostream& ostr,const Expression& exp);
