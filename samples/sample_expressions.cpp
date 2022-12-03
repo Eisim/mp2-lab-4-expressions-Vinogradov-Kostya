@@ -9,6 +9,5 @@ int main() {
 		std::cin >> a;
 		std::cout << a << "\n";
 	}
-
 	return 0;
 }

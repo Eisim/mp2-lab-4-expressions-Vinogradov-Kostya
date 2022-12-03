@@ -307,7 +307,6 @@ Expression& Expression::operator=(std::string str) {
 	return *this;
 }
 
-
 void Expression::operator()(std::string str) {
 	std::string tmp, token1, token2;
 	bool flag = false;
