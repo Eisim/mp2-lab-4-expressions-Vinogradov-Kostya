@@ -2,7 +2,6 @@
 //20+(((-1.2))/10.0)
 //a-2+(-1)
 int main() {
-
 	Expression a;
 
 	while (true) {
