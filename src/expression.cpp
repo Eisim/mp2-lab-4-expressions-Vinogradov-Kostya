@@ -49,6 +49,12 @@ bool bracketsIsCorrect(Expression& exp) {
 
 	return st.empty();
 }
+bool Expression::isVariable(std::string str) {
+	if(contains(str[0],alph_nums)) return false;
+	for (int i = 1; i < str.size(); i++)
+		if (!contains(str[i], alph_letters) || !contains(str[i], alph_nums)) return false;
+	return true;
+}
 
 enum class states {
 	WAIT_LET_NUM_MIN_OPENBR,
@@ -205,10 +211,13 @@ void Expression::cut() {
 			if (token != "") {
 				
 				postfix_form.push_back(token);
-				if (in(token, alph_constants))
-					operands.insert({ token,constants[token]});
-				else
-				operands.insert({ token, (contains(token[0],alph_letters)) ? 0.0 : std::stod(token) });
+				if (in(token, alph_constants)) {
+					operands.insert({ token,constants[token] });
+				}
+				else {
+					variables_list.push_back(token);
+					operands.insert({ token, (contains(token[0],alph_letters)) ? 0.0 : std::stod(token) });
+				}
 				token = "";
 			}
 		}
@@ -239,8 +248,10 @@ void Expression::cut() {
 		postfix_form.push_back(token);
 		if (in(token, alph_constants)) 
 			operands.insert({ token,constants[token] });
-		else
+		else {
 			operands.insert({ token, (contains(token[0],alph_letters)) ? 0.0 : std::stod(token) });
+			variables_list.push_back(token);
+		}
 	}
 	while(operations_stack.empty()==false) {
 		postfix_form.push_back(std::string(1, operations_stack.top()));
@@ -308,20 +319,114 @@ Expression& Expression::operator=(const Expression& exp) {
 	return *this;
 }
 
+void delete_spaces(std::string& str) {
+	std::string tmp;
+	for (int i = 0; i < str.size(); i++)
+		if (str[i] != ' ')
+			tmp += str[i];
+	str = tmp;
+}
 
 Expression& Expression::operator=(std::string str) {
-	source_str = str;
+	delete_spaces(str);
 
-	is_correct = this->expressionIsCorrect();
-	if (is_correct) {
-		this->cut();
-		this->calculate();
+	std::string token1, token2;
+	bool flag = true;
+	for (int i = 0; i < str.size(); i++) {
+		if (str[i] == '=') {
+			flag = false;
+			continue;
+		}
+		if (flag)
+			token1 += str[i];
+		else token2 += str[i];
 	}
+	if (token2 == "") {
+		source_str = str;
+		is_correct = expressionIsCorrect();
+		if (is_correct) {
+			cut();
+			calculate();
+		}
+	}
+	else if (source_str=="" && isVariable(token1)) {
+		Expression tmpexp2;
+		tmpexp2.operands = operands;
+		tmpexp2 = token2;
+		if (!tmpexp2.is_correct) throw("Expression is not correct");
+		operands[token1] = tmpexp2.res;
+	}
+	else if(in(token1,variables_list)) {
+		Expression tmpexp2;
+		tmpexp2.operands = operands;
+		tmpexp2 = token2;
+		if (!tmpexp2.expressionIsCorrect()) throw("Expression is not correct");
+		
+		operands[token1] = tmpexp2.res;
+		calculate();
+	}
+	else {
+		Expression tmpexp1(token1), tmpexp2(token2);
+		if (tmpexp1.is_correct && tmpexp2.is_correct) {
+			if (tmpexp1.res == tmpexp2.res) {
+				source_str = str;
+				res = tmpexp1.res;
+				is_correct = true;
+			}
+			else is_correct = false;
+			
+		}
+		if(!is_correct)
+		throw("Expressions is not correct");
+	}
+	/*
+	if (!contains('=', tmp)) {
+		clear();
+		source_str = tmp;
+		is_correct = expressionIsCorrect();
 
+		if (is_correct)
+			cut();
+		else source_str = "";
+	}
+	else {
+		for (auto symb : tmp) {
+			if (symb == '=') {
+				flag = true;
+				continue;
+			}
+			if (flag == false)
+				token1 += symb;
+			else token2 += symb;
+		}
+		if (in(token1, alph_constants) || contains(token1[0], alph_nums)) {
+			std::cout << "Can't change constant\n";
+			is_correct = false;
+		}
+		else if (token2 != "") {
+			Expression tmpexp;
+			tmpexp.operands = operands;
+			tmpexp = token2;
+			operands[token1] = tmpexp.res;
+		}
+		else if (token2 == "") {
+			std::cout << '=' << operands[token1];
+		}
+	}
+	is_correct = expressionIsCorrect();
+	if (is_correct) {
+		calculate();
+		
+	}
+	*/
 	return *this;
 }
 
 std::istream& operator>>(std::istream& istream,Expression& exp) {
+	std::string tmp;
+	std::getline(istream, tmp,'\n');
+	exp = tmp;
+	/*
 	std::string tmp,token1,token2;
 	bool flag=false;
 	istream >> tmp;
@@ -362,11 +467,12 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 	if (exp.is_correct) {
 		exp.calculate();
 	}
+	*/
 	return istream;
 }
 std::ostream& operator<<(std::ostream& ostream, const Expression& exp) {
 	if (exp.is_correct)
 		ostream << exp.source_str<<"="<<exp.res;
-	else ostream << "Expression is not correct";
+	else if(exp.source_str!="")ostream << "Expression is not correct";
 	return ostream;
 }

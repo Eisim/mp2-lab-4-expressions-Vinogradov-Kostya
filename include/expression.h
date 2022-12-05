@@ -16,7 +16,7 @@ class Expression {
 		alph_opening_brackets ="({[",
 		alph_closing_brackets=")}]",
 		alph_separator=".,";
-	std::vector<std::string> postfix_form;
+	std::vector<std::string> postfix_form,variables_list;
 	std::vector<std::string>alph_constants = {
 	"pi","e"
 	};
@@ -41,6 +41,8 @@ class Expression {
 	void cut();
 	void calculate();
 	void clear();
+	bool isVariable(std::string str);
+
 public:
 	Expression() :is_correct(false),res(0) {};
 	Expression(std::string str);

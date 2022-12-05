@@ -132,13 +132,13 @@ TEST(Expression, can_correctly_calculate_expression_after_change_values_of_varia
 }
 TEST(Expression, can_detect_change_value_of_constant_NUMBER) {
 	Expression exp("1+a");
-	std::istringstream input("a=2 1=1.5");
+	std::istringstream input("a=2\n1=1.5");
 	input >> exp;
 	EXPECT_EQ(3, exp.getResult());
 }
 TEST(Expression, can_detect_change_value_of_constant_SPECIAL_CONSTANT) {
 	Expression exp("pi+a");
-	std::istringstream input("a=2 pi=5");
+	std::istringstream input("a=2\npi=5");
 	input >> exp;
 	EXPECT_EQ(5.1415926535897932384626433832795, exp.getResult());
 }
