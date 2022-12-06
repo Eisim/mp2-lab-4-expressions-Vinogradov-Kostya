@@ -3,6 +3,33 @@
 
 #include <gtest.h>
 
+/*
+class NameFixture :public::testing::Test {
+	Expression exp;
+public:
+	NameFixture():exp() {
+		exp = "a+2+pi+c"; 
+		exp = "a=10";
+		exp = "c=-pi";
+	}
+	
+	double getResult() {
+		return exp.getResult();
+	}
+	void setValue(std::string str) {
+		exp = str;
+	}
+};
+
+TEST_F(NameFixture, test1) {
+	
+	EXPECT_EQ(12, getResult());
+}
+TEST_F(NameFixture, test2) {
+	setValue("a=-10");
+	EXPECT_EQ(-8, getResult());
+}
+*/
 TEST(Expression, can_create_empty_expression)
 {
 	ASSERT_NO_THROW(Expression exp);

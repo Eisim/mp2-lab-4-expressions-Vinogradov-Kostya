@@ -51,8 +51,9 @@ bool bracketsIsCorrect(Expression& exp) {
 }
 bool Expression::isVariable(std::string str) {
 	if(contains(str[0],alph_nums)) return false;
+	std::cout << str;
 	for (int i = 1; i < str.size(); i++)
-		if (!contains(str[i], alph_letters) || !contains(str[i], alph_nums)) return false;
+		if (!(contains(str[i], alph_letters) || contains(str[i], alph_nums))) return false;
 	return true;
 }
 
@@ -369,9 +370,12 @@ Expression& Expression::operator=(std::string str) {
 		Expression tmpexp1(token1), tmpexp2(token2);
 		if (tmpexp1.is_correct && tmpexp2.is_correct) {
 			if (tmpexp1.res == tmpexp2.res) {
-				source_str = str;
+				source_str = token1;
 				res = tmpexp1.res;
 				is_correct = true;
+				cut();
+				variables_list = tmpexp1.variables_list;
+				operands = tmpexp1.operands;
 			}
 			else is_correct = false;
 			
