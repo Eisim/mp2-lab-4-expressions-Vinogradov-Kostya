@@ -1,6 +1,7 @@
 #include "expression.h"
 #include<iostream>
 
+
 #include <gtest.h>
 
 /*
@@ -32,6 +33,7 @@ TEST_F(NameFixture, test2) {
 */
 TEST(Expression, can_create_empty_expression)
 {
+
 	ASSERT_NO_THROW(Expression exp);
 }
 TEST(Expression, can_create_expression_with_empty_str)
@@ -217,4 +219,6 @@ TEST(Expression, can_calculate_expression_with_different_values_of_variable) {
 		input >> exp;
 		EXPECT_EQ(1+i, exp.getResult());
 	}
+  ASSERT_NO_THROW(Expression exp);
+
 }
