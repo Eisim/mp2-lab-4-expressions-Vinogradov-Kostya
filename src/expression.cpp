@@ -349,6 +349,7 @@ Expression& Expression::operator=(std::string str) {
 			cut();
 			calculate();
 		}
+		else source_str = "";
 	}
 	else if (source_str=="" && isVariable(token1)) {
 		Expression tmpexp2;
