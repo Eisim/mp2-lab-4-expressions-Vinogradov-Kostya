@@ -51,7 +51,6 @@ bool bracketsIsCorrect(Expression& exp) {
 }
 bool Expression::isVariable(std::string str) {
 	if(contains(str[0],alph_nums)) return false;
-	std::cout << str;
 	for (int i = 1; i < str.size(); i++)
 		if (!(contains(str[i], alph_letters) || contains(str[i], alph_nums))) return false;
 	return true;
@@ -290,8 +289,9 @@ void Expression::calculate() {
 			v1 = st.top(); st.pop();
 			if (v2 == 0) {
 				std::cout << "Division by zero\n"; //throw("Division by zero");
-			is_correct = false;
-			break;
+			//is_correct = false;
+				res = INFINITY;
+			return;
 			}
 			st.push(v1 / v2);
 		}
@@ -356,14 +356,17 @@ Expression& Expression::operator=(std::string str) {
 		tmpexp2.operands = operands;
 		tmpexp2 = token2;
 		if (!tmpexp2.is_correct) throw("Expression is not correct");
+		source_str = token1;
+		res = tmpexp2.res;
+		is_correct = tmpexp2.is_correct;
 		operands[token1] = tmpexp2.res;
 	}
-	else if(in(token1,variables_list)) {
+	else if(isVariable(token1)) {
 		Expression tmpexp2;
 		tmpexp2.operands = operands;
 		tmpexp2 = token2;
 		if (!tmpexp2.expressionIsCorrect()) throw("Expression is not correct");
-		
+
 		operands[token1] = tmpexp2.res;
 		calculate();
 	}
@@ -384,46 +387,6 @@ Expression& Expression::operator=(std::string str) {
 		if(!is_correct)
 		throw("Expressions is not correct");
 	}
-	/*
-	if (!contains('=', tmp)) {
-		clear();
-		source_str = tmp;
-		is_correct = expressionIsCorrect();
-
-		if (is_correct)
-			cut();
-		else source_str = "";
-	}
-	else {
-		for (auto symb : tmp) {
-			if (symb == '=') {
-				flag = true;
-				continue;
-			}
-			if (flag == false)
-				token1 += symb;
-			else token2 += symb;
-		}
-		if (in(token1, alph_constants) || contains(token1[0], alph_nums)) {
-			std::cout << "Can't change constant\n";
-			is_correct = false;
-		}
-		else if (token2 != "") {
-			Expression tmpexp;
-			tmpexp.operands = operands;
-			tmpexp = token2;
-			operands[token1] = tmpexp.res;
-		}
-		else if (token2 == "") {
-			std::cout << '=' << operands[token1];
-		}
-	}
-	is_correct = expressionIsCorrect();
-	if (is_correct) {
-		calculate();
-		
-	}
-	*/
 	return *this;
 }
 
@@ -431,53 +394,12 @@ std::istream& operator>>(std::istream& istream,Expression& exp) {
 	std::string tmp;
 	std::getline(istream, tmp,'\n');
 	exp = tmp;
-	/*
-	std::string tmp,token1,token2;
-	bool flag=false;
-	istream >> tmp;
-	if (!contains('=',tmp)) {
-		exp.clear();
-		exp.source_str = tmp;
-		exp.is_correct = exp.expressionIsCorrect();
-
-		if (exp.is_correct)
-			exp.cut();
-		else exp.source_str = "";
-	}
-	else { 
-		for (auto symb : tmp) {
-			if (symb == '=') {
-				flag = true;
-				continue;
-			}
-			if (flag == false)
-				token1 += symb;
-			else token2 += symb;
-		}
-		if (in(token1, exp.alph_constants) || contains(token1[0], exp.alph_nums)) {
-			std::cout << "Can't change constant\n";
-			exp.is_correct = false;
-		}
-		else if(token2!="") {
-			Expression tmpexp;
-			tmpexp.operands = exp.operands;
-			tmpexp = token2;
-			exp.operands[token1] = tmpexp.res;
-		}
-		else if (token2 == "") {
-			std::cout << '=' << exp.operands[token1];
-		}
-	}
-	exp.is_correct = exp.expressionIsCorrect();
-	if (exp.is_correct) {
-		exp.calculate();
-	}
-	*/
+	
 	return istream;
 }
 std::ostream& operator<<(std::ostream& ostream, const Expression& exp) {
 	if (exp.is_correct)
-		ostream << exp.source_str<<"="<<exp.res;
+		ostream <<"res) " << exp.source_str << "=" << exp.res;
 	else if(exp.source_str!="")ostream << "Expression is not correct";
 	return ostream;
 }

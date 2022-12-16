@@ -89,7 +89,7 @@ TEST(Expression, can_calculate_expression_with_one_operation_division_correctly)
 }
 TEST(Expression, can_detect_division_by_zero) {
 	Expression exp("1/0");
-	EXPECT_EQ(0, exp.isCorrect());
+	EXPECT_EQ(INFINITY, exp.getResult());
 }
 
 

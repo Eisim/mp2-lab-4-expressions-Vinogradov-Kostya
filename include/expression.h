@@ -15,7 +15,7 @@ class Expression {
 		alph_operations = "-+/*",
 		alph_opening_brackets ="({[",
 		alph_closing_brackets=")}]",
-		alph_separator=".,";
+		alph_separator=".";
 	std::vector<std::string> postfix_form,variables_list;
 	std::vector<std::string>alph_constants = {
 	"pi","e"
