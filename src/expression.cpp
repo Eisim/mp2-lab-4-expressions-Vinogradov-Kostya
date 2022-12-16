@@ -6,7 +6,6 @@
 #include<map>
 #include<stack>
 
-
 void Expression::clear() {
 	Expression tmp;
 	*this = tmp;
@@ -290,7 +289,7 @@ void Expression::calculate() {
 			if (v2 == 0) {
 				std::cout << "Division by zero\n"; //throw("Division by zero");
 			//is_correct = false;
-				res = INFINITY;
+				res = (1e+300*1e+300);//INFINITY
 			return;
 			}
 			st.push(v1 / v2);
