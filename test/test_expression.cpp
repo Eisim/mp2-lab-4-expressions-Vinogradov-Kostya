@@ -156,6 +156,27 @@ TEST(Expression, can_detect_incorrectness_of_expression_INCORRECT_LAST_SYMBOL_AN
 	EXPECT_EQ(0, exp.isCorrect());
 }
 
+TEST(Expression, can_detect_incorrectness_of_expression_with_brackets_INCORRECT_LAST_SYMBOL_OPERATION) {
+	Expression exp("[1+2]-");
+	EXPECT_EQ(0, exp.isCorrect());
+}
+TEST(Expression, can_detect_incorrectness_of_expression_with_brackets_INCORRECT_LAST_SYMBOL_DOT) {
+	Expression exp("[1+2].");
+	EXPECT_EQ(0, exp.isCorrect());
+}
+TEST(Expression, can_detect_incorrectness_of_expression_with_brackets_INCORRECT_LAST_SYMBOL_OPENING_BRACKET) {
+	Expression exp("[1+2](");
+	EXPECT_EQ(0, exp.isCorrect());
+}
+TEST(Expression, can_detect_incorrectness_of_expression_with_brackets_INCORRECT_LAST_SYMBOL_CLOSINGING_BRACKET) {
+	Expression exp("[1+2](");
+	EXPECT_EQ(0, exp.isCorrect());
+}
+TEST(Expression, can_detect_incorrectness_of_expression_with_brackets_INCORRECT_LAST_SYMBOL_ANOTHER_SYMBOL) {
+	Expression exp("[1+2]>");
+	EXPECT_EQ(0, exp.isCorrect());
+}
+
 
 TEST(Expression, can_correctly_calculate_expression_after_change_value_of_variable) {
 	Expression exp("1+a");
